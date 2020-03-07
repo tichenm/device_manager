@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"github.com/satori/go.uuid"
 	"zhiyuan/scaffold/internal/model"
 )
 
@@ -10,12 +11,15 @@ func (s *Service) CreateCamera(CameraParams model.Camera_json)(result model.Came
 	//数据交换
 	//传入DB方法
 
+	uid, _ := uuid.NewV4()
 
 	Add_Camera := model.Camera{
 		Camera_type:CameraParams.Camera_type,
 		Camera_position:CameraParams.Camera_position,
 		Camera_address:CameraParams.Camera_address,
-		Camera_status:0,
+		Camera_RTSP:CameraParams.Camera_RTSP,
+		Camera_status:2,
+		Camera_token:uid.String(),
 	}
 	res,err := s.dao.CheckCameras(Add_Camera.Camera_address)
 	if res != true{
@@ -37,7 +41,9 @@ func (s *Service) UpdateCamera(CameraParams model.Camera_json,id int)(result mod
 		Camera_type:CameraParams.Camera_type,
 		Camera_position:CameraParams.Camera_position,
 		Camera_address:CameraParams.Camera_address,
+		Camera_RTSP:CameraParams.Camera_RTSP,
 	}
+
 	obj,err := s.dao.UpdateCamera(Add_Camera,Add_Camera.ID)
 	if err!=nil{
 		return	model.Camera{},err
@@ -53,13 +59,22 @@ func (s *Service) DeleteCamera(id int)(err error){
 	}
 	return nil
 }
-func (s *Service) GetCameras(camera_status,page,size int)(result []model.Camera,err error,count int,total int){
+func (s *Service) GetCameras(camera_position string,camera_status,page,size int)(result []model.Camera,err error,count int,total int){
 
-	result,err,count,total = s.dao.GetCameras(camera_status,page,size)
+	result,err,count,total = s.dao.GetCameras(camera_position,camera_status,page,size)
 	if err!=nil{
 		return	[]model.Camera{},err,0,0
 	}
 	return result,nil,count,total
+}
+
+func (s *Service) GetAllCameras()(result []model.Camera,err error){
+
+	result,err = s.dao.GetAllCameras()
+	if err!=nil{
+		return	[]model.Camera{},err
+	}
+	return result,nil
 }
 
 

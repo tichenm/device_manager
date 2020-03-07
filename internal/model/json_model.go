@@ -5,6 +5,7 @@ type Camera_json struct {
 	Camera_address string	`json:"camera_address"`
 	Camera_position string	`json:"camera_position"`
 	Camera_type string	`json:"camera_type"`
+	Camera_RTSP string `json:"camera_rtsp"`
 }
 
 // account 基础表字段
@@ -17,7 +18,12 @@ type Account_josn struct {
 
 // camera 基础表字段
 type Camera_status_json struct {
+	Camera_position string	`json:"camera_position"`
 	Camera_status int	`json:"camera_status"`
 	Page int 	`json:"page"`
 	Size int	`json:"size"`
+}
+
+type Event_json struct {
+
 }

@@ -51,11 +51,14 @@ func (d *Dao) DeleteCamera(id int)( err error){
 	return nil
 }
 
-func(d *Dao) GetCameras(camera_status ,page , size int)(result []model.Camera,err error,count int,total int){
+func(d *Dao) GetCameras(camera_pisition string,camera_status ,page , size int)(result []model.Camera,err error,count int,total int){
 
 	DBdate := d.crmdb
-	if camera_status != 3 {
+	if camera_status != 0 {
 		DBdate = DBdate.Where("camera_status = ?", camera_status)
+	}
+	if camera_pisition != "" {
+		DBdate = DBdate.Where("camera_position = ?", camera_pisition)
 	}
 	DBdate = DBdate.Order("id desc")
 	if page > 0 {
@@ -66,8 +69,11 @@ func(d *Dao) GetCameras(camera_status ,page , size int)(result []model.Camera,er
 		return result, err.Error, 0,0
 	}
 	DBcount := d.crmdb
-	if camera_status != 3 {
+	if camera_status != 0 {
 		DBcount = DBcount.Where("camera_status = ?", camera_status)
+	}
+	if camera_pisition != "" {
+		DBcount = DBcount.Where("camera_position = ?", camera_pisition)
 	}
 	if err := DBcount.Model(model.Camera{}).Count(&count); err.Error != nil {
 		return result, err.Error, 0,0
@@ -87,4 +93,14 @@ func(d *Dao) CheckCameras(camera_address  string)(bool,error){
 		return false,nil
 	}
 	return true, nil
+}
+
+func(d *Dao) GetAllCameras()(result []model.Camera,err error){
+
+	DBdate := d.crmdb
+	DBdate = DBdate.Order("id desc")
+	if err := DBdate.Model(model.Camera{}).Find(&result);err.Error!= nil {
+		return result, err.Error
+	}
+	return result, nil
 }
